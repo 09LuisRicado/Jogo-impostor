@@ -2167,7 +2167,8 @@ CATEGORIAS = {
             "Apelidado carinhosamente de 'Mr. Saturday' por seu desempenho aos sábados.",
         ],
     },
-    "Nike": [
+        "Marcas": {
+        "Nike": [
             "É uma marca de produtos esportivos famosa no mundo todo.",
             "Seu símbolo lembra um cheque ou verificação visual.",
             "Produz tênis, roupas e acessórios esportivos.",
@@ -2299,6 +2300,7 @@ CATEGORIAS = {
             "Conhecida mundialmente pela linha de motos esportivas 'Ninja'.",
             "Também produz jet-skis, quadriciclos e motores industriais.",
         ],
+ },
     "Super-Heróis": {
         "Homem-Aranha": [
             "Herói que ganhou habilidades após a picada de um aracnídeo.",
