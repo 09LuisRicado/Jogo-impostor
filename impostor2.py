@@ -94,6 +94,50 @@ CATEGORIAS = {
             "É conhecido por ter uma excelente memória.",
             "É um animal herbívoro de grande porte.",
         ],
+        "Leão": [
+        "É conhecido como o rei da selva e vive em grupos chamados bandos.",
+        "Os machos possuem uma juba imponente ao redor do pescoço.",
+        "São carnívoros e excelentes caçadores, especialmente as fêmeas.",
+        "Habitam principalmente as savanas africanas."
+    ],
+    "Tigre": [
+        "É o maior felino do mundo e se destaca por sua pelagem alaranjada com listras pretas.",
+        "Ao contrário da maioria dos felinos, os tigres adoram água e nadam muito bem.",
+        "São animais solitários e de hábitos predominantemente noturnos.",
+        "Encontrados principalmente nas florestas e selvas da Ásia."
+    ],
+    "Urso": [
+        "É um mamífero de grande porte, conhecido por sua força e robustez.",
+        "Algumas espécies passam o inverno dormindo em um processo chamado hibernação.",
+        "Possuem uma dieta variada, alimentando-se de plantas, peixes e mel.",
+        "Existem várias espécies, como o urso-pardo, o urso-polar e o panda."
+    ],
+    "Coelho": [
+        "É um pequeno mamífero herbívoro conhecido por suas orelhas longas e saltos rápidos.",
+        "Possui dentes incisivos que crescem continuamente durante toda a sua vida.",
+        "Vive geralmente em tocas subterrâneas construídas em grupos chamados colônias.",
+        "É um animal muito ágil e de reprodução rápida."
+    ],
+    "Cavalo": [
+        "É um mamífero de grande porte domesticado pelo ser humano há milhares de anos.",
+        "Possui excelente capacidade de corrida e sentidos muito apurados, como a audição.",
+        "Alimenta-se principalmente de grama e capim, sendo um animal herbívoro.",
+        "É utilizado historicamente para transporte, trabalho no campo e esportes."
+    ],
+    "Golfinho": [
+        "É um mamífero aquático extremamente inteligente e sociável.",
+        "Vive em grupos chamados bandos ou colônias e se comunica por meio de cliques e assobios.",
+        "Utiliza a ecolocalização para navegar e encontrar alimentos na água.",
+        "Precisa vir à superfície regularmente para respirar oxigênio pelo espiráculo."
+    ],
+    "Águia": [
+        "É uma ave de rapina de grande porte com uma visão extremamente aguçada.",
+        "Possui garras fortes e um bico curvo adaptado para caçar presas.",
+        "Constrói seus ninhos, chamados ninhos de águia ou penhascos, em locais altos e de difícil acesso.",
+        "É considerada um símbolo de força e liberdade em várias culturas."
+    ],
+
+    
     },
     "Profissões": {
         "Médico": [
