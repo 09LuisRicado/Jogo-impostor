@@ -2483,7 +2483,44 @@ CATEGORIAS = {
     },
 }
 
-# Inicialização dos estados na sessão do Streamlit
+st.set_page_config(page_title="Jogo do Impostor", page_icon="🕵️", layout="centered")
+
+st.markdown(
+    """
+    <style>
+    /* Ajustes para telas menores / responsividade */
+    .stButton>button {
+        width: 100%;
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+    }
+    @media (max-width: 640px) {
+        .block-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+    }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
+
+# Exemplo de dicionário de categorias (certifique-se de definir o seu no projeto completo)
+if "CATEGORIAS" not in globals():
+    CATEGORIAS = {
+        "Comidas & Bebidas": {
+            "Pizza": ["Massa", "Itália", "Queijo"],
+            "Hambúrguer": ["Carne", "Fast Food", "Pão"],
+        },
+        "Objetos": {
+            "Celular": ["Tela", "Ligação", "Bolso"],
+            "Relógio": ["Tempo", "Pulso", "Ponteiro"],
+        },
+    }
+
+# ---------------------------------------------------------
+# INICIALIZAÇÃO DOS ESTADOS NA SESSÃO DO STREAMLIT
+# ---------------------------------------------------------
 if "estado" not in st.session_state:
     st.session_state.estado = "CONFIGURACAO"
 if "num_jogadores" not in st.session_state:
@@ -2504,6 +2541,8 @@ if "revelado" not in st.session_state:
     st.session_state.revelado = False
 if "nomes_jogadores" not in st.session_state:
     st.session_state.nomes_jogadores = []
+if "jogador_inicial" not in st.session_state:
+    st.session_state.jogador_inicial = ""
 
 # ---------------------------------------------------------
 # TELA 1: CONFIGURAÇÃO DO JOGO (NÚMEROS E NOMES)
@@ -2511,24 +2550,35 @@ if "nomes_jogadores" not in st.session_state:
 if st.session_state.estado == "CONFIGURACAO":
     st.header("⚙️ Configurações da Partida")
 
-    num_jogadores = st.number_input(
-        "Quantidade de Jogadores:",
-        min_value=3,
-        max_value=20,
-        value=st.session_state.num_jogadores,
-        step=1,
-    )
+    col_num1, col_num2 = st.columns(2)
+    with col_num1:
+        num_jogadores = st.number_input(
+            "Quantidade de Jogadores:",
+            min_value=3,
+            max_value=20,
+            value=st.session_state.num_jogadores,
+            step=1,
+        )
+    with col_num2:
+        max_imp = max(1, int(num_jogadores // 2))
+        num_impostores = st.number_input(
+            "Quantidade de Impostores:",
+            min_value=1,
+            max_value=max_imp,
+            value=min(st.session_state.num_impostores, max_imp),
+            step=1,
+        )
 
-    max_imp = max(1, int(num_jogadores // 2))
-    num_impostores = st.number_input(
-        "Quantidade de Impostores:",
-        min_value=1,
-        max_value=max_imp,
-        value=min(st.session_state.num_impostores, max_imp),
-        step=1,
-    )
+    st.markdown("---")
+    head_col1, head_col2 = st.columns([2, 1])
+    with head_col1:
+        st.markdown("### ✏️ Nome dos Jogadores")
+    with head_col2:
+        # BOTÃO PARA LIMPAR OS NOMES DOS JOGADORES
+        if st.button("🗑️ Limpar Nomes", use_container_width=True):
+            st.session_state.nomes_jogadores = []
+            st.rerun()
 
-    st.markdown("### ✏️ Insira o Nome dos Jogadores")
     nomes_temp = []
     for i in range(int(num_jogadores)):
         nome_padrao = (
@@ -2536,12 +2586,13 @@ if st.session_state.estado == "CONFIGURACAO":
             if i < len(st.session_state.nomes_jogadores)
             else f"Jogador {i+1}"
         )
-        nome = st.text_input(f"Nome do Jogador {i+1}:", value=nome_padrao, key=f"nome_{i}")
+        nome = st.text_input(
+            f"Nome do Jogador {i+1}:", value=nome_padrao, key=f"nome_{i}"
+        )
         nomes_temp.append(nome.strip() if nome.strip() else f"Jogador {i+1}")
 
     st.markdown("---")
     lista_categorias = list(CATEGORIAS.keys())
-
     col1, col2 = st.columns([3, 1])
     with col1:
         idx_atual = (
@@ -2553,7 +2604,6 @@ if st.session_state.estado == "CONFIGURACAO":
             "Escolha a Categoria:", lista_categorias, index=idx_atual
         )
         st.session_state.categoria_selecionada = categoria_escolhida
-
     with col2:
         st.write("")
         st.write("")
@@ -2564,7 +2614,6 @@ if st.session_state.estado == "CONFIGURACAO":
             st.rerun()
 
     st.markdown("---")
-
     if st.button("🚀 Iniciar Jogo", use_container_width=True):
         st.session_state.num_jogadores = int(num_jogadores)
         st.session_state.num_impostores = int(num_impostores)
@@ -2574,17 +2623,16 @@ if st.session_state.estado == "CONFIGURACAO":
         palavra = random.choice(list(CATEGORIAS[cat].keys()))
         st.session_state.palavra_secreta = palavra
 
-        # Sorteia os índices dos impostores (0 até num_jogadores - 1)
+        # Sorteia os índices dos impostores
         todos_indices = list(range(st.session_state.num_jogadores))
         impostores_idx = random.sample(
             todos_indices, st.session_state.num_impostores
         )
         st.session_state.impostores_indices = impostores_idx
 
-        # Sorteia dicas diferentes para cada impostor
+        # Sorteia dicas para cada impostor
         dicas_disponiveis = CATEGORIAS[cat][palavra].copy()
         random.shuffle(dicas_disponiveis)
-
         st.session_state.dicas_impostores = {}
         for count, idx in enumerate(impostores_idx):
             dica_atribuida = dicas_disponiveis[count % len(dicas_disponiveis)]
@@ -2602,28 +2650,26 @@ elif st.session_state.estado == "DISTRIBUICAO":
     idx_atual = st.session_state.jogador_atual
     nome_atual = st.session_state.nomes_jogadores[idx_atual]
     total = st.session_state.num_jogadores
-
     st.header(f"👤 Vez de: **{nome_atual}** ({idx_atual + 1} de {total})")
 
     if not st.session_state.revelado:
         st.info(f"Passe o dispositivo para **{nome_atual}**.")
-        if st.button(f"👁️ Ver Meu Papel ({nome_atual})", use_container_width=True):
+        if st.button(
+            f"👁️ Ver Meu Papel ({nome_atual})", use_container_width=True
+        ):
             st.session_state.revelado = True
             st.rerun()
     else:
-        # Se for um dos impostores
+        # Se for impostor
         if idx_atual in st.session_state.impostores_indices:
             st.error("🚨 **VOCÊ É UM IMPOSTOR!** 🚨")
-
             dica = st.session_state.dicas_impostores.get(
                 idx_atual, "Pense em algo relacionado à categoria."
             )
             st.warning(f"💡 **Sua dica secreta:** *{dica}*")
-
             st.write(
                 "Use essa dica com cuidado para dar uma pista sutil sem revelar que não sabe a palavra exata!"
             )
-
             if st.session_state.num_impostores > 1:
                 parceiros = [
                     st.session_state.nomes_jogadores[i]
@@ -2633,7 +2679,6 @@ elif st.session_state.estado == "DISTRIBUICAO":
                 st.write(
                     f"🤝 **Seu(s) parceiro(s) impostor(es):** {', '.join(parceiros)}"
                 )
-
         # Se for inocente
         else:
             st.success(
@@ -2642,7 +2687,6 @@ elif st.session_state.estado == "DISTRIBUICAO":
             st.write("Sua missão: Dê uma pista sutil sobre a palavra!")
 
         st.markdown("---")
-
         if idx_atual < total - 1:
             if st.button("✅ Ok, Próximo Jogador", use_container_width=True):
                 st.session_state.jogador_atual += 1
@@ -2658,19 +2702,26 @@ elif st.session_state.estado == "DISTRIBUICAO":
 # ---------------------------------------------------------
 elif st.session_state.estado == "EM_JOGO":
     st.header("🎮 Partida em Andamento!")
-
     st.subheader("📌 Regras da Rodada")
-    st.markdown(f"""
+    
+    st.markdown(
+        f"""
     * **Categoria da partida:** {st.session_state.categoria_selecionada}
     * **Quantidade de Impostores:** {st.session_state.num_impostores}
     1. **Rodada de Pistas:** Cada jogador diz **uma única palavra/frase** relacionada à palavra secreta.
     2. **Discussão:** Debatam quem deu as pistas mais suspeitas.
     3. **Votação:** Ao sinal de todos, apontem para quem acham ser o impostor!
-    """)
+    """   
+    )
+    
 
     st.markdown("---")
-
     if st.button("🔍 Revelar Impostores e Palavra", use_container_width=True):
+        # Sorteia quem começará na próxima rodada ao encerrar a partida
+        st.session_state.jogador_inicial = random.choice(
+            st.session_state.nomes_jogadores
+        )
+      
         st.session_state.estado = "FIM"
         st.rerun()
 
@@ -2679,7 +2730,6 @@ elif st.session_state.estado == "EM_JOGO":
 # ---------------------------------------------------------
 elif st.session_state.estado == "FIM":
     st.header("🏆 Fim da Partida!")
-
     nomes_impostores = [
         st.session_state.nomes_jogadores[i]
         for i in sorted(st.session_state.impostores_indices)
@@ -2690,9 +2740,9 @@ elif st.session_state.estado == "FIM":
     st.success(
         f"🔑 A palavra secreta era: **{st.session_state.palavra_secreta}**"
     )
-
     st.markdown("---")
 
+    # MANTÉM OS MESMOS NOMES AO CLICAR EM JOGAR NOVAMENTE
     if st.button("🔄 Jogar Novamente", use_container_width=True):
         st.session_state.estado = "CONFIGURACAO"
         st.rerun()
